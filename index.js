@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const fillOutHTML = require('./src/generateMarkdown');
 const writeFile = require('./src/createFile');
+const teamMembers = [];
 
 // array of questions for user
 function start() {
@@ -29,8 +30,11 @@ function start() {
         case "Intern":
           addIntern();
           break;
+        case "I'm good!":
+          writeToFile();
+          break;
         default:
-          buildTeam();
+          start();
       }
     });
 }
@@ -61,7 +65,7 @@ function addManager() {
     },
     {
       type: "input",
-      name: "managerOfficeNumber",
+      name: "officeNumber",
       message: "What is your manager's office number?"
     },
   ])
@@ -70,9 +74,93 @@ function addManager() {
       answers.managerName,
       answers.managerId,
       answers.managerEmail,
-      answers.managerOfficeNumber
+      answers.officeNumber
     );
     teamMembers.push(manager);
+    start();
+  });
+}
+
+function addEngineer() {
+  inquirer.prompt([
+    {
+      type: "input",
+      name: "engineerName",
+      message: "What is your engineer's name?"
+    },
+    {
+      type: "input",
+      name: "engineerId",
+      message: "What is your engineer's id?"
+    },
+    {
+      type: "input",
+      name: "engineerEmail",
+      message: "What is your engineer's email?",
+      validate: (answer) => {
+        const pass = answer.match(/\S+@\S+\.\S+/);
+        if (pass) {
+          return true;
+        }
+        return "Please enter a valid email address.";
+      },
+    },
+    {
+      type: "input",
+      name: "github",
+      message: "What is your engineer's GitHub username?"
+    },
+  ])
+  .then((answers) => {
+    const manager = new Manager(
+      answers.engineerName,
+      answers.engineerId,
+      answers.engineerEmail,
+      answers.github
+    );
+    teamMembers.push(engineer);
+    start();
+  });
+}
+
+function addIntern() {
+  inquirer.prompt([
+    {
+      type: "input",
+      name: "internName",
+      message: "What is your intern's name?"
+    },
+    {
+      type: "input",
+      name: "engineerId",
+      message: "What is your intern's id?"
+    },
+    {
+      type: "input",
+      name: "engineerEmail",
+      message: "What is your interns's email?",
+      validate: (answer) => {
+        const pass = answer.match(/\S+@\S+\.\S+/);
+        if (pass) {
+          return true;
+        }
+        return "Please enter a valid email address.";
+      },
+    },
+    {
+      type: "input",
+      name: "school",
+      message: "What is your intern's school name?"
+    },
+  ])
+  .then((answers) => {
+    const manager = new Manager(
+      answers.internName,
+      answers.internId,
+      answers.internEmail,
+      answers.school
+    );
+    teamMembers.push(intern);
     start();
   });
 }
