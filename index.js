@@ -1,7 +1,16 @@
+const Manager = require("./lib/Manager");
+const Engineer = require("./lib/Engineer");
+const Intern = require("./lib/Intern");
+
 const inquirer = require('inquirer');
-const fillOutHTML = require('./src/generateMarkdown');
-const writeFile = require('./src/createFile');
-const teamMembers = [];
+const path = require("path");
+const fs = require("fs");
+const render = require("./src/generateMarkdown");
+
+const OUTPUT_DIR = path.resolve(__dirname, "output");
+const outputPath = path.join(OUTPUT_DIR, "index.html");
+
+const members = [];
 
 // array of questions for user
 function start() {
@@ -31,7 +40,7 @@ function start() {
           addIntern();
           break;
         case "I'm good!":
-          writeToFile();
+          createFile();
           break;
         default:
           start();
@@ -76,7 +85,7 @@ function addManager() {
       answers.managerEmail,
       answers.officeNumber
     );
-    teamMembers.push(manager);
+    members.push(manager);
     start();
   });
 }
@@ -112,13 +121,13 @@ function addEngineer() {
     },
   ])
   .then((answers) => {
-    const manager = new Manager(
+    const engineer = new Engineer(
       answers.engineerName,
       answers.engineerId,
       answers.engineerEmail,
       answers.github
     );
-    teamMembers.push(engineer);
+    members.push(engineer);
     start();
   });
 }
@@ -132,12 +141,12 @@ function addIntern() {
     },
     {
       type: "input",
-      name: "engineerId",
+      name: "internId",
       message: "What is your intern's id?"
     },
     {
       type: "input",
-      name: "engineerEmail",
+      name: "internEmail",
       message: "What is your interns's email?",
       validate: (answer) => {
         const pass = answer.match(/\S+@\S+\.\S+/);
@@ -154,37 +163,22 @@ function addIntern() {
     },
   ])
   .then((answers) => {
-    const manager = new Manager(
+    const intern = new Intern(
       answers.internName,
       answers.internId,
       answers.internEmail,
       answers.school
     );
-    teamMembers.push(intern);
+    members.push(intern);
     start();
   });
 }
 
+function createFile() {
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR);
+  }
+  fs.writeFileSync(outputPath, render(members), "utf-8");
+};
 
-// function to write README file
-function writeToFile(fileName, data) {
-}
-
-// function to initialize program
-function init(questions) {
-    return inquirer.prompt(questions);
-}
-
-init(questions)
-.then(answers => {
-    return fillOutHTML(answers);
-})
-.then(HTMLdata => {
-    return writeFile(HTMLdata)
-})
-.then(writeFileResponse => {
-    console.log(writeFileResponse);
-})
-.catch(err => {
-  console.log(err);
-});
+start();

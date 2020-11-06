@@ -1,22 +1,83 @@
-const fs = require('fs');
+const path = require("path");
+const fs = require("fs");
 
-const writeFile = fileContent => {
-    return new Promise((resolve, reject) => {
-      fs.writeFile('../dist/index.html', fileContent, err => {
-        // if there's an error, reject the Promise and send the error to the Promise's `.catch()` method
-        if (err) {
-          reject(err);
-          // return out of the function here to make sure the Promise doesn't accidentally execute the resolve() function as well
-          return;
-        }
-  
-        // if everything went well, resolve the Promise and send the successful data to the `.then()` method
-        resolve({
-          ok: true,
-          message: 'File created!'
-        });
-      });
-    });
-  };
+const templatesDir = path.resolve(__dirname, "../generateMarkdown");
 
-  module.exports = writeFile;
+const render = (employees) => {
+  const html = [];
+
+  html.push(
+    ...employees
+      .filter((employee) => employee.getRole() === "Manager")
+      .map((manager) => renderManager(manager))
+      .join("")
+  );
+  html.push(
+    ...employees
+      .filter((employee) => employee.getRole() === "Engineer")
+      .map((engineer) => renderEngineer(engineer))
+      .join("")
+  );
+  html.push(
+    ...employees
+      .filter((employee) => employee.getRole() === "Intern")
+      .map((intern) => renderIntern(intern))
+      .join("")
+  );
+
+  return renderMain(html.join(""));
+};
+
+const renderManager = (manager) => {
+  let template = fs.readFileSync(
+    path.resolve(templatesDir, "manager.html"),
+    "utf8"
+  );
+  template = replacePlaceholders(template, "name", manager.getName());
+  template = replacePlaceholders(template, "role", manager.getRole());
+  template = replacePlaceholders(template, "email", manager.getEmail());
+  template = replacePlaceholders(template, "id", manager.getId());
+  template = replacePlaceholders(template, "officeNumber", manager.officeNumber());
+  return template;
+};
+
+const renderEngineer = (engineer) => {
+  let template = fs.readFileSync(
+    path.resolve(templatesDir, "engineer.html"),
+    "utf8"
+  );
+  template = replacePlaceholders(template, "name", engineer.getName());
+  template = replacePlaceholders(template, "role", engineer.getRole());
+  template = replacePlaceholders(template, "email", engineer.getEmail());
+  template = replacePlaceholders(template, "id", engineer.getId());
+  template = replacePlaceholders(template, "github", engineer.getGithub());
+  return template;
+};
+
+const renderIntern = (intern) => {
+  let template = fs.readFileSync(
+    path.resolve(templatesDir, "intern.html"),
+    "utf8"
+  );
+  template = replacePlaceholders(template, "name", intern.getName());
+  template = replacePlaceholders(template, "role", intern.getRole());
+  template = replacePlaceholders(template, "email", intern.getEmail());
+  template = replacePlaceholders(template, "id", intern.getId());
+  template = replacePlaceholders(template, "school", intern.getSchool());
+  return template;
+};
+
+const renderMain = (html) => {
+  const template = fs.readFileSync(
+    path.resolve(templatesDir, "main.html"),
+    "utf8"
+  );
+  return replacePlaceholders(template, "team", html);
+};
+
+const replacePlaceholders = (template, placeholder, value) => {
+  const pattern = new RegExp("{{ " + placeholder + " }}", "gm");
+  return template.replace(pattern, value);
+};
+
+module.exports = render;

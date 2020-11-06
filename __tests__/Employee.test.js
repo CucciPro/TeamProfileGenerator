@@ -17,7 +17,7 @@ test('Check getName function', () => {
 test('Check getID function', () => {
     const employee = new Employee('test', '001', 'test@test.com');
 
-    expect(employee.getID()).toBe('001')
+    expect(employee.getId()).toBe('001')
 });
 
 test('Check getEmail function', () => {
