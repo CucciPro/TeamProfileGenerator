@@ -25,7 +25,9 @@ Clone git to local machine. Open terminal in folder and run "npm i" and wait for
 
 "node index" in terminal, then open HTML file found in Output folder in your favorite browser!
 
-Link to Walkthrough video: 
+## Link to WalkThrough Video
+
+[Google Drive](https://drive.google.com/file/d/1uN9GtdHuMxKL7fR3yjF42UwFOZGq_m8Y/view)
 
 ## License
 
