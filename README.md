@@ -25,6 +25,8 @@ Clone git to local machine. Open terminal in folder and run "npm i" and wait for
 
 "node index" in terminal, then open HTML file found in Output folder in your favorite browser!
 
+Link to Walkthrough video: 
+
 ## License
 
 This project is licensed under the [mit](https://choosealicense.com/licenses/mit) license.
@@ -37,7 +39,7 @@ Just CucciPro
 
 ## Tests
 
-Run the following commmands to run a test:
+Run the following commmands to run a test: npm test
 
  
 
